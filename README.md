@@ -1,134 +1,86 @@
-<!-- Add these sections to your sentinel.html file -->
+# Azure Unified Audit Tool
 
-<!-- 1. DCR Upload Section - Add this AFTER your existing file upload section -->
-<div class="row mb-4" id="dcrUploadSection">
-  <div class="col-md-4">
-    <label class="form-label fw-bold">
-      <i class="bi bi-gear"></i> Upload DCR Configuration (Optional)
-    </label>
-    <div class="file-input-wrapper">
-      <input type="file" id="dcrFileInput" accept=".json">
-      <label for="dcrFileInput" class="file-input-label">
-        <i class="bi bi-diagram-2"></i>
-        <span id="dcrFileInputText">Choose DCR JSON file</span>
-      </label>
-    </div>
-    <small class="text-muted">
-      <i class="bi bi-info-circle"></i> 
-      Analyze DCR transformations and identify Auxiliary Logs candidates for cost optimization
-    </small>
-  </div>
-  <div class="col-md-2">
-    <div class="stats-card" style="background: linear-gradient(135deg, #17a2b8, #138496);">
-      <div class="stats-number" id="transformedTablesCount">0</div>
-      <div class="stats-label">Transformed</div>
-    </div>
-  </div>
-  <div class="col-md-2">
-    <div class="stats-card" style="background: linear-gradient(135deg, #fd7e14, #e8590c);">
-      <div class="stats-number" id="auxiliaryLogsCandidates">0</div>
-      <div class="stats-label">Aux Logs</div>
-    </div>
-  </div>
-  <div class="col-md-2">
-    <div class="stats-card" style="background: linear-gradient(135deg, #28a745, #1e7e34);">
-      <div class="stats-number" id="estimatedAuxSavings">$0</div>
-      <div class="stats-label">Est. Savings</div>
-    </div>
-  </div>
-  <div class="col-md-2">
-    <div class="stats-card" style="background: linear-gradient(135deg, #6f42c1, #5a32a3);">
-      <div class="stats-number" id="dcrStatus">None</div>
-      <div class="stats-label">DCR Status</div>
-    </div>
-  </div>
-</div>
+This script performs a **comprehensive subscription-wide audit** across Azure.  
+It collects information on **Data Collection Rules (DCRs)**, **Security & RBAC**, and **Infrastructure resources**, then exports structured **JSON, CSV, and TXT reports**.  
+All results are packaged into a ZIP archive for easy sharing or archiving.  
 
-<!-- 2. Enhanced Action Buttons - REPLACE your existing "analyzeDCR" button or add if missing -->
-<button id="analyzeDCR" class="btn btn-primary btn-custom me-2" disabled>
-  <i class="bi bi-diagram-2"></i> DCR + Aux Logs Analysis
-</button>
+---
 
-<!-- 3. Enhanced Legend - REPLACE your existing legend section -->
-<div class="enhanced-legend">
-  <h6><i class="bi bi-info-circle"></i> Enhanced Cost Analysis Legend</h6>
-  <div class="row">
-    <div class="col-md-6">
-      <div class="legend-row">
-        <div class="legend-color" style="background-color: var(--success-color);"></div>
-        <span>Available (Paid)</span>
-      </div>
-      <div class="legend-row">
-        <div class="legend-color" style="background-color: var(--free-color);"></div>
-        <span>Free Ingestion</span>
-      </div>
-      <div class="legend-row">
-        <div class="legend-color" style="background-color: var(--e5-color);"></div>
-        <span>E5 License Benefit</span>
-      </div>
-    </div>
-    <div class="col-md-6">
-      <div class="legend-row">
-        <div class="transformation-indicator high-reduction"></div>
-        <span>DCR Transformation (High Reduction)</span>
-      </div>
-      <div class="legend-row">
-        <div class="auxiliary-logs-indicator aux-high-priority">AUX</div>
-        <span>Auxiliary Logs Candidate</span>
-      </div>
-      <div class="legend-row">
-        <div class="legend-color" style="background-color: var(--danger);"></div>
-        <span>Not Available</span>
-      </div>
-    </div>
-  </div>
-</div>
+## 📌 Current Coverage
 
-<!-- 4. Update Script Loading Order - ADD these new scripts BEFORE your existing app.js -->
-<script>
-// Mark script loading for diagnostics
-if (typeof window.scriptsLoaded === 'undefined') {
-  window.scriptsLoaded = {};
-}
-</script>
+### 🔎 Data Collection Rules (DCRs)
+- Lists all Data Collection Rules in each subscription  
+- Captures rule name, resource group, location, destination type, and destination resource  
 
-<!-- Enhanced DCR and Auxiliary Logs scripts -->
-<script src="./js/components/auxiliary-logs-analyzer.js"></script>
-<script>window.scriptsLoaded['auxiliary-logs-analyzer'] = true;</script>
+### 🛡️ Security & RBAC
+- **Role Assignments** → principal, role definition, scope  
+- **Microsoft Sentinel Workspaces** → workspace inventory  
+- **Microsoft Defender for Cloud** → protection status for resources  
 
-<script src="./js/components/enhanced-dcr-analyzer.js"></script>
-<script>window.scriptsLoaded['enhanced-dcr-analyzer'] = true;</script>
+### 🏗️ Infrastructure Inventory
+- Virtual Machines (VMs)  
+- Storage Accounts  
+- Key Vaults  
+- SQL Servers & Databases  
+- App Services (Web Apps)  
+- Cosmos DB Accounts  
+- AKS Clusters  
 
-<!-- Your existing scripts continue as normal -->
-<!-- ... existing script tags ... -->
+---
 
-<!-- 5. Optional: Add Enhanced Cost Analysis Dashboard Section -->
-<!-- Replace or enhance your existing cost analysis section -->
-<div class="cost-analysis">
-  <h4 class="mb-3">
-    <i class="bi bi-piggy-bank"></i> Enhanced Cost Analysis Dashboard
-    <small class="text-muted">Transformations & Auxiliary Logs</small>
-  </h4>
-  <div class="cost-breakdown">
-    <div class="cost-item">
-      <div class="cost-value" id="freeIngestionValue">0</div>
-      <div>Free Ingestion Sources</div>
-    </div>
-    <div class="cost-item">
-      <div class="cost-value" id="e5BenefitValue">0</div>
-      <div>E5 Benefit Sources</div>
-    </div>
-    <div class="cost-item">
-      <div class="cost-value" id="paidSourcesValue">0</div>
-      <div>Paid Sources</div>
-    </div>
-    <div class="cost-item" style="background: linear-gradient(135deg, #17a2b8, #138496);">
-      <div class="cost-value" id="auxLogsValue" style="color: white;">0</div>
-      <div style="color: white;">Aux Logs Candidates</div>
-    </div>
-    <div class="cost-item">
-      <div class="cost-value" id="totalSavingsValue">$0</div>
-      <div>Est. Monthly Savings</div>
-    </div>
-  </div>
-</div>
+## 📊 Audit Matrix
+
+| **Category** | **Resource / Check** | **Azure CLI Command** | **Collected Fields** |
+|--------------|----------------------|------------------------|-----------------------|
+| **Data Collection Rules** | Data Collection Rules | `az monitor data-collection rule list` | Name, Resource Group, Location, Destination Type, Destination Resource ID |
+| **Security & RBAC** | Role Assignments | `az role assignment list` | Principal Name, Principal ID, Role Definition, Scope |
+| | Sentinel Workspaces | `az sentinel list` | Workspace Name, Resource Group, Location |
+| | Defender for Cloud Coverage | `az security resource list` | Resource ID, Resource Type, Protection Status |
+| **Infrastructure** | Virtual Machines (VMs) | `az vm list` | Name, Resource Group, Location, VM Size, OS Type |
+| | Storage Accounts | `az storage account list` | Name, Resource Group, Location, Kind, SKU |
+| | Key Vaults | `az keyvault list` | Name, Resource Group, Location, SKU |
+| | SQL Servers | `az sql server list` | Name, Resource Group, Location |
+| | SQL Databases | `az sql db list` | Name, Server, Resource Group, Location |
+| | App Services (Web Apps) | `az webapp list` | Name, Resource Group, Location |
+| | Cosmos DB Accounts | `az cosmosdb list` | Name, Resource Group, Location, Kind |
+| | AKS Clusters | `az aks list` | Name, Resource Group, Location, Kubernetes Version |
+
+---
+
+## ➕ Potential Future Coverage
+
+The script can be extended to capture additional resources:
+
+### 🔐 Security / Governance
+- Policy Assignments (`az policy assignment list`)  
+- Policy Compliance (`az policy state list`)  
+- Management Locks (`az lock list`)  
+- PIM Role Activations  
+
+### 🌐 Networking
+- Public IPs (`az network public-ip list`)  
+- NSGs (`az network nsg list`)  
+- Firewalls (`az network firewall list`)  
+- Application Gateways (`az network application-gateway list`)  
+- Load Balancers (`az network lb list`)  
+- VNets & Subnets (`az network vnet list`)  
+
+### ☁️ Platform Services
+- Azure Functions (`az functionapp list`)  
+- Event Hubs (`az eventhubs namespace list`)  
+- Service Bus (`az servicebus namespace list`)  
+- API Management (`az apim list`)  
+- Logic Apps (`az logicapp list`)  
+
+### 🗄️ Data & Storage
+- Blob/File Containers (`az storage container list`)  
+- Managed Disks (`az disk list`)  
+
+### 🔍 Monitoring / Logging
+- Log Analytics Workspaces (`az monitor log-analytics workspace list`)  
+- Diagnostic Settings (`az monitor diagnostic-settings list`)  
+
+---
+
+## 📂 Example Output
+
